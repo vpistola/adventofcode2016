@@ -1,7 +1,7 @@
 # Utilities functions for the Advent of Code.
 
 import re
-import numpy as np
+#import numpy as np
 import math
 import urllib.request
 
