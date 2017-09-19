@@ -1,4 +1,4 @@
-# Utilities functions for the Advent of Code.
+# Peter Norvig's functions for the Advent of Code.
 
 import re
 #import numpy as np
@@ -52,5 +52,67 @@ def powerset(iterable):
     for r in range(len(items)+1):
         for c in combinations(items, r):
             yield c
+            
+# 2-D points implemented using (x, y) tuples
+def X(point): return point[0]
+def Y(point): return point[1]
+            
+def neighbors4(point): 
+    "The four neighbors (without diagonals)."
+    x, y = point
+    return ((x+1, y), (x-1, y), (x, y+1), (x, y-1))
 
+def neighbors8(point): 
+    "The eight neighbors (with diagonals)."
+    x, y = point 
+    return ((x+1, y), (x-1, y), (x, y+1), (x, y-1),
+            (X+1, y+1), (x-1, y-1), (x+1, y-1), (x-1, y+1))
+
+def cityblock_distance(p, q=(0, 0)): 
+    "City block distance between two points."
+    return abs(X(p) - X(q)) + abs(Y(p) - Y(q))
+
+def euclidean_distance(p, q=(0, 0)): 
+    "Euclidean (hypotenuse) distance between two points."
+    return math.hypot(X(p) - X(q), Y(p) - Y(q))
+
+def trace1(f):
+    "Print a trace of the input and output of a function on one line."
+    def traced_f(*args):
+        result = f(*args)
+        print('{}({}) = {}'.format(f.__name__, ', '.join(map(str, args)), result))
+        return result
+    return traced_f
+    
+
+def astar_search(start, h_func, moves_func):
+    "Find a shortest sequence of states from start to a goal state (a state s with h_func(s) == 0)."
+    frontier  = [(h_func(start), start)] # A priority queue, ordered by path length, f = g + h
+    previous  = {start: None}  # start state has no previous state; other states will
+    path_cost = {start: 0}     # The cost of the best path to a state.
+    while frontier:
+        (f, s) = heappop(frontier)
+        if h_func(s) == 0:
+            return Path(previous, s)
+        for s2 in moves_func(s):
+            new_cost = path_cost[s] + 1
+            if s2 not in path_cost or new_cost < path_cost[s2]:
+                heappush(frontier, (new_cost + h_func(s2), s2))
+                path_cost[s2] = new_cost
+                previous[s2] = s
+    return dict(fail=True, front=len(frontier), prev=len(previous))
+                
+def Path(previous, s): 
+    "Return a list of states that lead to state s, according to the previous dict."
+    return ([] if (s is None) else Path(previous, previous[s]) + [s])
+
+    
+# Some tests:
+assert tuple(transpose(((1, 2, 3), (4, 5, 6)))) == ((1, 4), (2, 5), (3, 6))
+assert first('abc') == first(['a', 'b', 'c']) == 'a'
+assert cat(['a', 'b', 'c']) == 'abc'
+assert (groupby(['test', 'one', 'two', 'three', 'four'], key=len) 
+        == {3: ['one', 'two'], 4: ['test', 'four'], 5: ['three']})
+
+    
 # END
