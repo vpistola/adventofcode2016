@@ -86,5 +86,5 @@ print(astar_search(part2, h_func))
 t2 = time.time()
 print("Time elapsed:", t2 - t1, "seconds")
 
-#  _   
-# |_|
+
+# END
