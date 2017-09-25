@@ -73,15 +73,15 @@ def traverse_matrix(matrix, goal):
 def counting_states(matrix, start, goal):
     "Count how many locations can you reach in at most 50 steps."
     frontier = deque([start])
-    S = {start: 1}    # the previous states
+    explored = {start: 1}    # the previous states
     while frontier:
         current = frontier.popleft()
-        if S[current] < goal:
+        if explored[current] < goal:
             for s in neighbors(current):
-                if matrix[s[0]][s[1]] == '.' and s not in S:
+                if matrix[s[0]][s[1]] == '.' and s not in explored:
                     frontier.append(s)
-                    S[s] = S[current] + 1
-    return len(S)
+                    explored[s] = explored[current] + 1
+    return len(explored)
 
 print(counting_states(matrix, start, 50))
     
